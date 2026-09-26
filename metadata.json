@@ -1,0 +1,6 @@
+{
+  "name": "+PERFECT+ Medical Clinic",
+  "description": "Modern medical clinic website with doctor availability directory, blood test instructions, and WhatsApp appointment booking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
