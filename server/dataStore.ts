@@ -30,9 +30,9 @@ const INITIAL_DATA: DatabaseSchema = {
     tagline: "Your Health, Our Priority",
     about: "+PERFECT+ Medical Clinic is committed to providing comprehensive, compassionate, and patient-centered healthcare. Combining experienced specialist physicians, state-of-the-art pathology diagnostics, and effortless appointment scheduling.",
     address: "Plot 42, Health Avenue, Salt Lake Sector 5, Kolkata - 700091",
-    phone: "+91 98301 23456",
+    phone: "+91 97336 49491",
     email: "care@perfectclinic.com",
-    whatsapp: "+919830123456",
+    whatsapp: "+919733649491",
     heroImage: "/src/assets/images/hero_clinic_reception_1790442820365.jpg",
     openingTime: "08:00 AM",
     closingTime: "08:00 PM",
@@ -47,6 +47,7 @@ const INITIAL_DATA: DatabaseSchema = {
     developerInstagram: "@rajdutta_dev",
     developerInstagramUrl: "https://instagram.com/rajdutta_dev"
   },
+
   doctors: [
     {
       id: "doc-1",
@@ -117,6 +118,7 @@ const INITIAL_DATA: DatabaseSchema = {
       updatedAt: new Date().toISOString()
     }
   ],
+
   availability: [
     {
       id: "slot-1",
@@ -219,6 +221,7 @@ const INITIAL_DATA: DatabaseSchema = {
       notes: "Pediatric Clinic"
     }
   ],
+
   services: [
     {
       id: "serv-1",
@@ -269,6 +272,7 @@ const INITIAL_DATA: DatabaseSchema = {
       status: "active"
     }
   ],
+
   bloodTests: [
     {
       id: "test-1",
@@ -358,22 +362,24 @@ const INITIAL_DATA: DatabaseSchema = {
       status: "active"
     }
   ],
+
   phlebotomist: {
     name: "Ms. Priya Das",
     photo: "/src/assets/images/phlebotomist_portrait_1790442856267.jpg",
     qualification: "Certified Medical Lab Technician & Certified Phlebotomist (CMLT, B.Sc MLT)",
     experience: "7+ Years",
     description: "Experienced in gentle, safe, and professional blood sample collection with a patient-friendly approach. Expert in painless geriatric and pediatric vein access with strict aseptic protocols.",
-    whatsapp: "+919830123456",
+    whatsapp: "+919733649491",
     availableHours: "Monday – Saturday: 8:00 AM – 3:00 PM | Sunday: 9:00 AM – 1:00 PM"
   },
+
   appointments: [
     {
       id: "apt-1",
       type: "doctor",
       patientName: "Sourav Ganguly",
       patientAge: "42",
-      phone: "+91 98311 00223",
+      phone: "+91 97336 49491",
       doctorName: "Dr. Ananya Sen",
       date: "2026-09-28",
       time: "5:30 PM",
@@ -385,7 +391,7 @@ const INITIAL_DATA: DatabaseSchema = {
       type: "blood_test",
       patientName: "Meenakshi Sen",
       patientAge: "35",
-      phone: "+91 98302 44556",
+      phone: "+91 97336 49491",
       testName: "Lipid Profile & HbA1c",
       date: "2026-09-29",
       time: "8:30 AM",
@@ -422,16 +428,24 @@ export class ClinicStore {
       if (fs.existsSync(DATA_FILE)) {
         const content = fs.readFileSync(DATA_FILE, 'utf-8');
         const parsed = JSON.parse(content);
+
         return {
           ...INITIAL_DATA,
           ...parsed,
-          clinic: { ...INITIAL_DATA.clinic, ...(parsed.clinic || {}) },
-          phlebotomist: { ...INITIAL_DATA.phlebotomist, ...(parsed.phlebotomist || {}) }
+          clinic: {
+            ...INITIAL_DATA.clinic,
+            ...(parsed.clinic || {})
+          },
+          phlebotomist: {
+            ...INITIAL_DATA.phlebotomist,
+            ...(parsed.phlebotomist || {})
+          }
         };
       }
     } catch (err) {
       console.error('Failed reading data file, using defaults', err);
     }
+
     this.saveData(INITIAL_DATA);
     return INITIAL_DATA;
   }
@@ -439,7 +453,11 @@ export class ClinicStore {
   private saveData(data: DatabaseSchema): void {
     try {
       this.ensureDataDirectory();
-      fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf-8');
+      fs.writeFileSync(
+        DATA_FILE,
+        JSON.stringify(data, null, 2),
+        'utf-8'
+      );
     } catch (err) {
       console.error('Failed saving data file', err);
     }
@@ -450,7 +468,11 @@ export class ClinicStore {
   }
 
   public updateClinic(updates: Partial<ClinicInfo>): ClinicInfo {
-    this.data.clinic = { ...this.data.clinic, ...updates };
+    this.data.clinic = {
+      ...this.data.clinic,
+      ...updates
+    };
+
     this.saveData(this.data);
     return this.data.clinic;
   }
@@ -463,68 +485,117 @@ export class ClinicStore {
     return this.data.doctors.find(d => d.id === id);
   }
 
-  public addDoctor(doctor: Omit<Doctor, 'id' | 'createdAt' | 'updatedAt'>): Doctor {
+  public addDoctor(
+    doctor: Omit<Doctor, 'id' | 'createdAt' | 'updatedAt'>
+  ): Doctor {
     const newDoc: Doctor = {
       ...doctor,
       id: `doc-${Date.now()}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
     this.data.doctors.push(newDoc);
     this.saveData(this.data);
+
     return newDoc;
   }
 
-  public updateDoctor(id: string, updates: Partial<Doctor>): Doctor | null {
+  public updateDoctor(
+    id: string,
+    updates: Partial<Doctor>
+  ): Doctor | null {
     const idx = this.data.doctors.findIndex(d => d.id === id);
-    if (idx === -1) return null;
+
+    if (idx === -1) {
+      return null;
+    }
+
     this.data.doctors[idx] = {
       ...this.data.doctors[idx],
       ...updates,
       updatedAt: new Date().toISOString()
     };
+
     this.saveData(this.data);
+
     return this.data.doctors[idx];
   }
 
   public deleteDoctor(id: string): boolean {
     const lenBefore = this.data.doctors.length;
-    this.data.doctors = this.data.doctors.filter(d => d.id !== id);
+
+    this.data.doctors = this.data.doctors.filter(
+      d => d.id !== id
+    );
+
     // Also remove associated availability
-    this.data.availability = this.data.availability.filter(a => a.doctorId !== id);
+    this.data.availability = this.data.availability.filter(
+      a => a.doctorId !== id
+    );
+
     this.saveData(this.data);
+
     return this.data.doctors.length < lenBefore;
   }
 
-  public getAvailability(doctorId?: string): AvailabilitySlot[] {
+  public getAvailability(
+    doctorId?: string
+  ): AvailabilitySlot[] {
     if (doctorId) {
-      return this.data.availability.filter(a => a.doctorId === doctorId);
+      return this.data.availability.filter(
+        a => a.doctorId === doctorId
+      );
     }
+
     return this.data.availability;
   }
 
-  public addAvailability(slot: Omit<AvailabilitySlot, 'id'>): AvailabilitySlot {
+  public addAvailability(
+    slot: Omit<AvailabilitySlot, 'id'>
+  ): AvailabilitySlot {
     const newSlot: AvailabilitySlot = {
       ...slot,
       id: `slot-${Date.now()}`
     };
+
     this.data.availability.push(newSlot);
     this.saveData(this.data);
+
     return newSlot;
   }
 
-  public updateAvailability(id: string, updates: Partial<AvailabilitySlot>): AvailabilitySlot | null {
-    const idx = this.data.availability.findIndex(a => a.id === id);
-    if (idx === -1) return null;
-    this.data.availability[idx] = { ...this.data.availability[idx], ...updates };
+  public updateAvailability(
+    id: string,
+    updates: Partial<AvailabilitySlot>
+  ): AvailabilitySlot | null {
+    const idx = this.data.availability.findIndex(
+      a => a.id === id
+    );
+
+    if (idx === -1) {
+      return null;
+    }
+
+    this.data.availability[idx] = {
+      ...this.data.availability[idx],
+      ...updates
+    };
+
     this.saveData(this.data);
+
     return this.data.availability[idx];
   }
 
   public deleteAvailability(id: string): boolean {
     const lenBefore = this.data.availability.length;
-    this.data.availability = this.data.availability.filter(a => a.id !== id);
+
+    this.data.availability = this.data.availability.filter(
+      a => a.id !== id
+    );
+
     this.saveData(this.data);
+
     return this.data.availability.length < lenBefore;
   }
 
@@ -532,28 +603,51 @@ export class ClinicStore {
     return this.data.services;
   }
 
-  public addService(service: Omit<ClinicService, 'id'>): ClinicService {
+  public addService(
+    service: Omit<ClinicService, 'id'>
+  ): ClinicService {
     const newService: ClinicService = {
       ...service,
       id: `serv-${Date.now()}`
     };
+
     this.data.services.push(newService);
     this.saveData(this.data);
+
     return newService;
   }
 
-  public updateService(id: string, updates: Partial<ClinicService>): ClinicService | null {
-    const idx = this.data.services.findIndex(s => s.id === id);
-    if (idx === -1) return null;
-    this.data.services[idx] = { ...this.data.services[idx], ...updates };
+  public updateService(
+    id: string,
+    updates: Partial<ClinicService>
+  ): ClinicService | null {
+    const idx = this.data.services.findIndex(
+      s => s.id === id
+    );
+
+    if (idx === -1) {
+      return null;
+    }
+
+    this.data.services[idx] = {
+      ...this.data.services[idx],
+      ...updates
+    };
+
     this.saveData(this.data);
+
     return this.data.services[idx];
   }
 
   public deleteService(id: string): boolean {
     const lenBefore = this.data.services.length;
-    this.data.services = this.data.services.filter(s => s.id !== id);
+
+    this.data.services = this.data.services.filter(
+      s => s.id !== id
+    );
+
     this.saveData(this.data);
+
     return this.data.services.length < lenBefore;
   }
 
@@ -561,28 +655,51 @@ export class ClinicStore {
     return this.data.bloodTests;
   }
 
-  public addBloodTest(test: Omit<BloodTest, 'id'>): BloodTest {
+  public addBloodTest(
+    test: Omit<BloodTest, 'id'>
+  ): BloodTest {
     const newTest: BloodTest = {
       ...test,
       id: `test-${Date.now()}`
     };
+
     this.data.bloodTests.push(newTest);
     this.saveData(this.data);
+
     return newTest;
   }
 
-  public updateBloodTest(id: string, updates: Partial<BloodTest>): BloodTest | null {
-    const idx = this.data.bloodTests.findIndex(t => t.id === id);
-    if (idx === -1) return null;
-    this.data.bloodTests[idx] = { ...this.data.bloodTests[idx], ...updates };
+  public updateBloodTest(
+    id: string,
+    updates: Partial<BloodTest>
+  ): BloodTest | null {
+    const idx = this.data.bloodTests.findIndex(
+      t => t.id === id
+    );
+
+    if (idx === -1) {
+      return null;
+    }
+
+    this.data.bloodTests[idx] = {
+      ...this.data.bloodTests[idx],
+      ...updates
+    };
+
     this.saveData(this.data);
+
     return this.data.bloodTests[idx];
   }
 
   public deleteBloodTest(id: string): boolean {
     const lenBefore = this.data.bloodTests.length;
-    this.data.bloodTests = this.data.bloodTests.filter(t => t.id !== id);
+
+    this.data.bloodTests = this.data.bloodTests.filter(
+      t => t.id !== id
+    );
+
     this.saveData(this.data);
+
     return this.data.bloodTests.length < lenBefore;
   }
 
@@ -590,9 +707,16 @@ export class ClinicStore {
     return this.data.phlebotomist;
   }
 
-  public updatePhlebotomist(updates: Partial<Phlebotomist>): Phlebotomist {
-    this.data.phlebotomist = { ...this.data.phlebotomist, ...updates };
+  public updatePhlebotomist(
+    updates: Partial<Phlebotomist>
+  ): Phlebotomist {
+    this.data.phlebotomist = {
+      ...this.data.phlebotomist,
+      ...updates
+    };
+
     this.saveData(this.data);
+
     return this.data.phlebotomist;
   }
 
@@ -600,27 +724,47 @@ export class ClinicStore {
     return this.data.appointments;
   }
 
-  public logAppointment(record: Omit<AppointmentRecord, 'id' | 'createdAt'>): AppointmentRecord {
+  public logAppointment(
+    record: Omit<AppointmentRecord, 'id' | 'createdAt'>
+  ): AppointmentRecord {
     const newRecord: AppointmentRecord = {
       ...record,
       id: `apt-${Date.now()}`,
       createdAt: new Date().toISOString()
     };
+
     this.data.appointments.unshift(newRecord);
+
     // keep recent 100
     if (this.data.appointments.length > 100) {
-      this.data.appointments = this.data.appointments.slice(0, 100);
+      this.data.appointments =
+        this.data.appointments.slice(0, 100);
     }
+
     this.saveData(this.data);
+
     return newRecord;
   }
 
   public getStats() {
-    const activeDocs = this.data.doctors.filter(d => d.status === 'active').length;
-    const activeServices = this.data.services.filter(s => s.status === 'active').length;
-    const totalTests = this.data.bloodTests.filter(t => t.status === 'active').length;
-    const totalSlots = this.data.availability.filter(a => a.status === 'available').length;
-    const totalAppointments = this.data.appointments.length;
+    const activeDocs = this.data.doctors.filter(
+      d => d.status === 'active'
+    ).length;
+
+    const activeServices = this.data.services.filter(
+      s => s.status === 'active'
+    ).length;
+
+    const totalTests = this.data.bloodTests.filter(
+      t => t.status === 'active'
+    ).length;
+
+    const totalSlots = this.data.availability.filter(
+      a => a.status === 'available'
+    ).length;
+
+    const totalAppointments =
+      this.data.appointments.length;
 
     return {
       totalDoctors: this.data.doctors.length,
