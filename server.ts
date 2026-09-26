@@ -23,15 +23,19 @@ const ADMIN_TOKEN = 'token_perfect_admin_session_2026';
 // Middleware for Admin Auth
 const requireAdmin = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers.authorization;
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
     return;
   }
+
   const token = authHeader.split(' ')[1];
+
   if (token !== ADMIN_TOKEN) {
     res.status(403).json({ error: 'Forbidden: Invalid admin token' });
     return;
   }
+
   next();
 };
 
@@ -40,6 +44,7 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction): void => 
 // 1. Auth routes
 app.post('/api/admin/login', (req: Request, res: Response) => {
   const { email, password } = req.body;
+
   if (
     (email === ADMIN_EMAIL || email === 'admin') &&
     (password === ADMIN_PASSWORD || password === 'admin123')
@@ -54,7 +59,10 @@ app.post('/api/admin/login', (req: Request, res: Response) => {
       }
     });
   } else {
-    res.status(401).json({ error: 'Invalid email or password. Use demo credentials: admin@perfectclinic.com / admin123' });
+    res.status(401).json({
+      error:
+        'Invalid email or password. Use demo credentials: admin@perfectclinic.com / admin123'
+    });
   }
 });
 
@@ -98,10 +106,12 @@ app.get('/api/doctors', (req: Request, res: Response) => {
 app.get('/api/doctors/:id', (req: Request, res: Response) => {
   try {
     const doctor = clinicStore.getDoctorById(req.params.id);
+
     if (!doctor) {
       res.status(404).json({ error: 'Doctor not found' });
       return;
     }
+
     res.json(doctor);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch doctor' });
@@ -120,10 +130,12 @@ app.post('/api/doctors', requireAdmin, (req: Request, res: Response) => {
 app.put('/api/doctors/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const updated = clinicStore.updateDoctor(req.params.id, req.body);
+
     if (!updated) {
       res.status(404).json({ error: 'Doctor not found' });
       return;
     }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update doctor' });
@@ -133,11 +145,16 @@ app.put('/api/doctors/:id', requireAdmin, (req: Request, res: Response) => {
 app.delete('/api/doctors/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const deleted = clinicStore.deleteDoctor(req.params.id);
+
     if (!deleted) {
       res.status(404).json({ error: 'Doctor not found' });
       return;
     }
-    res.json({ success: true, message: 'Doctor deleted successfully' });
+
+    res.json({
+      success: true,
+      message: 'Doctor deleted successfully'
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete doctor' });
   }
@@ -175,10 +192,12 @@ app.post('/api/availability', requireAdmin, (req: Request, res: Response) => {
 app.put('/api/availability/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const updated = clinicStore.updateAvailability(req.params.id, req.body);
+
     if (!updated) {
       res.status(404).json({ error: 'Availability slot not found' });
       return;
     }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update availability slot' });
@@ -188,11 +207,16 @@ app.put('/api/availability/:id', requireAdmin, (req: Request, res: Response) => 
 app.delete('/api/availability/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const deleted = clinicStore.deleteAvailability(req.params.id);
+
     if (!deleted) {
       res.status(404).json({ error: 'Availability slot not found' });
       return;
     }
-    res.json({ success: true, message: 'Slot removed' });
+
+    res.json({
+      success: true,
+      message: 'Slot removed'
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete availability slot' });
   }
@@ -220,10 +244,12 @@ app.post('/api/services', requireAdmin, (req: Request, res: Response) => {
 app.put('/api/services/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const updated = clinicStore.updateService(req.params.id, req.body);
+
     if (!updated) {
       res.status(404).json({ error: 'Service not found' });
       return;
     }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update service' });
@@ -233,11 +259,16 @@ app.put('/api/services/:id', requireAdmin, (req: Request, res: Response) => {
 app.delete('/api/services/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const deleted = clinicStore.deleteService(req.params.id);
+
     if (!deleted) {
       res.status(404).json({ error: 'Service not found' });
       return;
     }
-    res.json({ success: true, message: 'Service removed' });
+
+    res.json({
+      success: true,
+      message: 'Service removed'
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete service' });
   }
@@ -265,10 +296,12 @@ app.post('/api/blood-tests', requireAdmin, (req: Request, res: Response) => {
 app.put('/api/blood-tests/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const updated = clinicStore.updateBloodTest(req.params.id, req.body);
+
     if (!updated) {
       res.status(404).json({ error: 'Blood test not found' });
       return;
     }
+
     res.json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to update blood test' });
@@ -278,11 +311,16 @@ app.put('/api/blood-tests/:id', requireAdmin, (req: Request, res: Response) => {
 app.delete('/api/blood-tests/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const deleted = clinicStore.deleteBloodTest(req.params.id);
+
     if (!deleted) {
       res.status(404).json({ error: 'Blood test not found' });
       return;
     }
-    res.json({ success: true, message: 'Blood test removed' });
+
+    res.json({
+      success: true,
+      message: 'Blood test removed'
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete blood test' });
   }
@@ -320,7 +358,11 @@ app.get('/api/appointments', requireAdmin, (req: Request, res: Response) => {
 app.post('/api/appointments', (req: Request, res: Response) => {
   try {
     const record = clinicStore.logAppointment(req.body);
-    res.status(201).json({ success: true, appointment: record });
+
+    res.status(201).json({
+      success: true,
+      appointment: record
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to log appointment' });
   }
@@ -347,11 +389,24 @@ async function startServer() {
       },
       appType: 'spa',
     });
+
     app.use(vite.middlewares);
   } else {
     const distPath = path.resolve(process.cwd(), 'dist');
+    const assetsPath = path.resolve(process.cwd(), 'src/assets');
+
+    // Serve the Vite production build
     if (fs.existsSync(distPath)) {
       app.use(express.static(distPath));
+    }
+
+    // Serve images and other assets referenced as /src/assets/...
+    if (fs.existsSync(assetsPath)) {
+      app.use('/src/assets', express.static(assetsPath));
+    }
+
+    // SPA fallback
+    if (fs.existsSync(distPath)) {
       app.get('*', (req: Request, res: Response) => {
         res.sendFile(path.join(distPath, 'index.html'));
       });
@@ -359,10 +414,12 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`+PERFECT+ Medical Clinic Server running at http://localhost:${PORT}`);
+    console.log(
+      `+PERFECT+ Medical Clinic Server running at http://localhost:${PORT}`
+    );
   });
 }
 
-startServer().catch(err => {
+startServer().catch((err) => {
   console.error('Failed to start server:', err);
 });
